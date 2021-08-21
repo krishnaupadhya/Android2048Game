@@ -5,25 +5,37 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import com.krishna.game2048.R
+import com.krishna.game2048.SwipeCallback
 
 class TileManager(
-    val res: Resources,
-    val tileSize: Int,
-    val scWidth: Int,
-    val scHeight: Int
-) : TileManagerCallback, Sprite {
-    lateinit var tile: Tile
+    private val res: Resources,
+    private val tileSize: Int,
+    private val scWidth: Int,
+    private val scHeight: Int,
 
-    val drawables = mutableListOf<Int>()
+    ) : TileManagerCallback, Sprite {
+    private var tile: Tile
+
+    private val drawables = mutableListOf<Int>()
 
     //all possible tiles holder
-    val tileMap = hashMapOf<Int, Bitmap>()
+    private val tileMap = hashMapOf<Int, Bitmap>()
+
+    //initalizing 2d arrya of tiles martix 4*4
+    private var tilesMatrix : Array<Array<Tile?>> = Array(4) {
+        Array(4) {
+            Tile(tileSize, scWidth, scHeight, this, 1, 1)
+        }
+    }//arrayOf()
 
     init {
-        initBitmaps()
-        tile = Tile(tileSize, scWidth, scHeight, this)
-    }
 
+
+        initBitmaps()
+        tile = Tile(tileSize, scWidth, scHeight, this,1,1)
+//        initTiles(tilesMatrix)
+        tilesMatrix[1][1] = tile
+    }
 
     private fun initBitmaps() {
         drawables.add(R.drawable.one)
@@ -57,14 +69,24 @@ class TileManager(
     }
 
     override fun update() {
+        tile.update()
     }
 
     override fun getBitMap(curTileLevel: Int): Bitmap {
-        return tileMap[curTileLevel-1] ?: kotlin.run {
-            val bmp = BitmapFactory.decodeResource(res, drawables[curTileLevel-1])
+        return tileMap[curTileLevel - 1] ?: kotlin.run {
+            val bmp = BitmapFactory.decodeResource(res, drawables[curTileLevel - 1])
             //create tile of tile size using bitmap
             Bitmap.createScaledBitmap(bmp, tileSize, tileSize, false)
         }
 
+    }
+
+    fun onSwipe(d: SwipeCallback.Direction) {
+        when (d) {
+            SwipeCallback.Direction.UP -> tile.move(0, 1)
+            SwipeCallback.Direction.DOWN -> tile.move(3, 1)
+            SwipeCallback.Direction.LEFT -> tile.move(1, 0)
+            else -> tile.move(1, 3)
+        }
     }
 }

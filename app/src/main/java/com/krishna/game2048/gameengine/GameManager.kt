@@ -5,14 +5,17 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.krishna.game2048.SwipeCallback
+import com.krishna.game2048.SwipeListener
 import com.krishna.game2048.sprites.Grid
 import com.krishna.game2048.sprites.TileManager
 
 
 class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context, attrs),
-    SurfaceHolder.Callback {
+    SurfaceHolder.Callback ,SwipeCallback{
     lateinit var gameHandler: GameHandler
     lateinit var grid: Grid
     var scHeight: Int = 0
@@ -20,10 +23,13 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     var tileSize: Int = 0
     var mContext: Context? = null
     lateinit var tileManager: TileManager
+    lateinit var swipeListener: SwipeListener
 
     init {
         holder.addCallback(this)
+        isLongClickable=true
         mContext = context
+        swipeListener= SwipeListener(mContext,this)
         initGrid()
         tileManager = TileManager(resources, tileSize, scWidth, scHeight)
     }
@@ -79,6 +85,17 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
             grid.draw(it)
             tileManager.draw(it)
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event?.let {
+            swipeListener.onTouchEvent(event)
+        }
+        return super.onTouchEvent(event)
+    }
+    override fun onSwipe(d: SwipeCallback.Direction) {
+        //tile manager processes the direction
+        tileManager.onSwipe(d)
     }
 
 }

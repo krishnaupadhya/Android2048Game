@@ -6,24 +6,84 @@ class Tile(
     val tileSize: Int,
     val scWidth: Int,
     val scHeight: Int,
-    val tmCallback: TileManagerCallback
+    val tmCallback: TileManagerCallback,
+    val matrixX: Int,
+    val matrixY: Int
 ) : Sprite {
 
     var curTileLevel: Int = 1//level that this tile is on
+    var curX: Int = 0
+    var curY: Int = 0
+    var destX: Int = 0
+    var destY: Int = 0
+    var isMoving = false
+    var movingSpeed = 10 //num of pixels per frame tile is moving
 
-    //draw a tile on the correct position
+    init {
+
+        // (scWidth / 2 - 2 * tileSize) positions the tile in x direction i.e at 0,0 of grid
+        // ( matrixY * tileSize ) is required to move it in x direction towards x,0 or x,1 or x,2 or x,4
+        curX = scWidth / 2 - 2 * tileSize + matrixY * tileSize
+        destX = curX
+        // (scHeight / 2 - 2 * tileSize) positions the tile in Y direction i.e at 0,0 of grid
+        // ( matrixX * tileSize ) is required to move it in Y direction  towards 0,y or 1,y or 2,y or 3,y
+        curY = scHeight / 2 - 2 * tileSize + matrixX * tileSize
+        destY = curY
+    }
+
+    fun move(matrixX: Int, matrixY: Int) {
+        isMoving=true
+        destX = scWidth / 2 - 2 * tileSize + matrixY * tileSize
+        destY = scHeight / 2 - 2 * tileSize + matrixX * tileSize
+    }
+
+    //draw a tile on the curX and curY position
     //create a tile from tile manager
-    //
     override fun draw(canvas: Canvas) {
         canvas.drawBitmap(
             tmCallback.getBitMap(curTileLevel),
-            (scWidth / 2).toFloat() - tileSize,
-            (scHeight / 2).toFloat() - tileSize,
+            curX.toFloat(),
+            curY.toFloat(),
             null
         )
+        if(isMoving && curX==destX && curY==destY){
+            // we want to know if tiles moving is complete so that we can increment count if 2 tiles are merged
+            isMoving=false
+        }
     }
 
+    /**
+     * move curX to dest X with speed if tiles need to move large distance else just move without speed
+     */
     override fun update() {
-        TODO("Not yet implemented")
+        if (curX < destX) {
+            //curX may be very close to destX in that case we may get jitter if add more speed
+            if (curX + movingSpeed > destX) {
+                curX = destX //avoid adding speed
+            } else {
+                curX += movingSpeed //add speed
+            }
+        } else if (curX > destX) { // we are too far to the right
+            if (curX - movingSpeed < destX) {
+                curX = destX //
+            } else {
+                curX -= movingSpeed
+            }
+        }
+
+        if (curY < destY) {
+            //curY may be very close to destY in that case we may get jitter if add more speed
+            if (curY + movingSpeed > destY) {
+                curY = destY //avoid adding speed
+            } else {
+                curY += movingSpeed //add speed
+            }
+        } else if (curY > destY) { // we are too far to the right
+            if (curY - movingSpeed < destY) {
+                curY = destY //
+            } else {
+                curY -= movingSpeed
+            }
+        }
     }
 }
