@@ -6,10 +6,9 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.SurfaceHolder
-
 import android.view.SurfaceView
 import com.krishna.game2048.sprites.Grid
-import com.krishna.game2048.utility.Utils
+import com.krishna.game2048.sprites.TileManager
 
 
 class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context, attrs),
@@ -20,11 +19,13 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     var scWidth: Int = 0
     var tileSize: Int = 0
     var mContext: Context? = null
+    lateinit var tileManager: TileManager
 
     init {
         holder.addCallback(this)
         mContext = context
         initGrid()
+        tileManager = TileManager(resources, tileSize, scWidth, scHeight)
     }
 
     private fun initGrid() {
@@ -68,12 +69,15 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     }
 
     fun update() {
+        tileManager.update()
     }
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
         canvas?.let {
+            it.drawRGB(250, 250, 250)
             grid.draw(it)
+            tileManager.draw(it)
         }
     }
 
