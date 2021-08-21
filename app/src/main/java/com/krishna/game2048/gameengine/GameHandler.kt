@@ -4,6 +4,9 @@ import android.graphics.Canvas
 import android.view.SurfaceHolder
 import com.krishna.game2048.utility.Utils
 
+/*
+class to draw canvas every X frame per second
+ */
 class GameHandler(var surfaceHolder: SurfaceHolder, val gameManager: GameManager) : Thread() {
 
     val targetFps = 60
