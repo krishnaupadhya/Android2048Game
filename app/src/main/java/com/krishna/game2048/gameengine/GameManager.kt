@@ -22,12 +22,12 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     var scWidth: Int = 0
     var tileSize: Int = 0
     var mContext: Context? = null
-    lateinit var tileManager: TileManager
-    lateinit var swipeListener: SwipeListener
+    var tileManager: TileManager
+    var swipeListener: SwipeListener
 
     init {
         holder.addCallback(this)
-        isLongClickable=true
+        isLongClickable=true // allows us to intercept the on touch event
         mContext = context
         swipeListener= SwipeListener(mContext,this)
         initGrid()

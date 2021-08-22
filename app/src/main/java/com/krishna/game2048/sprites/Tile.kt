@@ -17,10 +17,10 @@ class Tile(
     var destX: Int = 0
     var destY: Int = 0
     var isMoving = false
-    var movingSpeed = 10 //num of pixels per frame tile is moving
+    var movingSpeed = 100 //num of pixels per frame tile is moving
+    var increment = false
 
     init {
-
         // (scWidth / 2 - 2 * tileSize) positions the tile in x direction i.e at 0,0 of grid
         // ( matrixY * tileSize ) is required to move it in x direction towards x,0 or x,1 or x,2 or x,4
         curX = scWidth / 2 - 2 * tileSize + matrixY * tileSize
@@ -32,7 +32,7 @@ class Tile(
     }
 
     fun move(matrixX: Int, matrixY: Int) {
-        isMoving=true
+        isMoving = true
         destX = scWidth / 2 - 2 * tileSize + matrixY * tileSize
         destY = scHeight / 2 - 2 * tileSize + matrixX * tileSize
     }
@@ -46,9 +46,15 @@ class Tile(
             curY.toFloat(),
             null
         )
-        if(isMoving && curX==destX && curY==destY){
+        if (isMoving && curX == destX && curY == destY) {
             // we want to know if tiles moving is complete so that we can increment count if 2 tiles are merged
-            isMoving=false
+            isMoving = false
+            if (increment) {
+                //on moving tiles and merging with existing tiles new tile value should be incremented to next value
+                // ex, if 2 then 4, if 4 then 8, i.e increments in 2 to power n
+                curTileLevel++
+                increment = false
+            }
         }
     }
 
@@ -85,5 +91,18 @@ class Tile(
                 curY -= movingSpeed
             }
         }
+    }
+
+    fun getValueTileLevel(): Int {
+        return curTileLevel
+    }
+
+    fun incrementTile(): Tile {
+        increment = true
+        return this
+    }
+
+    fun toIncrement(): Boolean {
+        return increment
     }
 }
