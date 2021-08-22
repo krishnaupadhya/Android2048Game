@@ -138,7 +138,7 @@ class TileManager(
                 if (tilesMatrix[i][j] != null) {
                     tempMatrix[i][j] =
                         tilesMatrix[i][j] // copy same tile in new matrix at same position
-                    for (k in j + 1..3){
+                    for (k in j + 1..3) {
                         if (tempMatrix[i][k] == null) { //if tile at one position right is null
                             tempMatrix[i][k] = tilesMatrix[i][j] // move element one position right
                             if (tempMatrix[i][k - 1] == tilesMatrix[i][j])
@@ -165,31 +165,39 @@ class TileManager(
         }
 
         for (i in 0..3) {
-            for (j in  3 downTo 0) {
-                val t = tilesMatrix[i][j]
-                var newT: Tile? = null
-                var matrixX = 0
-                var matrixY = 0
-                //go through new matrix and check if tiles is present in new matrix, and find position
-                for (a in 0..3) {
-                    for (b in 0..3) {
-                        if (tempMatrix[a][b] == t) {
-                            newT = tempMatrix[a][b]
-                            matrixX = a
-                            matrixY = b
-                            break
-                        }
-
-                    }
-                }
-                // move tile to correct position
-                newT?.let {
-                    movingTiles.add(newT)
-                    t?.move(matrixX, matrixY)
-                }
+            for (j in 3 downTo 0) {
+                moveTileToNewPosition(i, j, tempMatrix)
             }
         }
 
+    }
+
+    private fun moveTileToNewPosition(
+        i: Int,
+        j: Int,
+        tempMatrix: Array<Array<Tile?>>
+    ) {
+        val t = tilesMatrix[i][j]
+        var newT: Tile? = null
+        var matrixX = 0
+        var matrixY = 0
+        //go through new matrix and check if tiles is present in new matrix, and find position
+        for (a in 0..3) {
+            for (b in 0..3) {
+                if (tempMatrix[a][b] == t) {
+                    newT = tempMatrix[a][b]
+                    matrixX = a
+                    matrixY = b
+                    break
+                }
+
+            }
+        }
+        // move tile to correct position
+        newT?.let {
+            movingTiles.add(newT)
+            t?.move(matrixX, matrixY)
+        }
     }
 
     private fun handleSwipeLeftLogic(tempMatrix: Array<Array<Tile?>>) {
@@ -227,27 +235,7 @@ class TileManager(
 
         for (i in 3 downTo 0) {
             for (j in 0..3) {
-                val t = tilesMatrix[i][j]
-                var newT: Tile? = null
-                var matrixX = 0
-                var matrixY = 0
-                //go through new matrix and check if tiles is present in new matrix, and find position
-                for (a in 0..3) {
-                    for (b in 0..3) {
-                        if (tempMatrix[a][b] == t) {
-                            newT = tempMatrix[a][b]
-                            matrixX = a
-                            matrixY = b
-                            break
-                        }
-
-                    }
-                }
-                // move tile to correct position
-                newT?.let {
-                    movingTiles.add(newT)
-                    t?.move(matrixX, matrixY)
-                }
+                moveTileToNewPosition(i, j, tempMatrix)
             }
         }
     }
@@ -288,27 +276,7 @@ class TileManager(
 
         for (i in 3 downTo 0) {
             for (j in 0..3) {
-                val t = tilesMatrix[i][j]
-                var newT: Tile? = null
-                var matrixX = 0
-                var matrixY = 0
-                //go through new matrix and check if tiles is present in new matrix, and find position
-                for (a in 0..3) {
-                    for (b in 0..3) {
-                        if (tempMatrix[a][b] == t) {
-                            newT = tempMatrix[a][b]
-                            matrixX = a
-                            matrixY = b
-                            break
-                        }
-
-                    }
-                }
-                // move tile to correct position
-                newT?.let {
-                    movingTiles.add(newT)
-                    t?.move(matrixX, matrixY)
-                }
+                moveTileToNewPosition(i, j, tempMatrix)
             }
         }
     }
@@ -363,27 +331,7 @@ class TileManager(
         //
         for (i in 0..3) {
             for (j in 0..3) {
-                val t = tilesMatrix[i][j]
-                var newT: Tile? = null
-                var matrixX = 0
-                var matrixY = 0
-                //go through new matrix and check if tiles is present in new matrix, and find position
-                for (a in 0..3) {
-                    for (b in 0..3) {
-                        if (tempMatrix[a][b] == t) {
-                            newT = tempMatrix[a][b]
-                            matrixX = a
-                            matrixY = b
-                            break
-                        }
-
-                    }
-                }
-                // move tile to correct position
-                newT?.let {
-                    movingTiles.add(newT)
-                    t?.move(matrixX, matrixY)
-                }
+                moveTileToNewPosition(i, j, tempMatrix)
             }
         }
     }
