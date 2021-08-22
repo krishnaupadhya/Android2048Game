@@ -125,13 +125,70 @@ class TileManager(
                 SwipeCallback.Direction.UP -> handleSwipeUpLogic(tempMatrix)
                 SwipeCallback.Direction.DOWN -> handleSwipeDownLogic(tempMatrix)
                 SwipeCallback.Direction.LEFT -> handleSwipeLeftLogic(tempMatrix)
-                else -> onSwipeRight(tempMatrix)
+                else -> handleSwipeRightLogic(tempMatrix)
             }
             tilesMatrix = tempMatrix
         }
     }
 
-    private fun onSwipeRight(tempMatrix: Array<Array<Tile?>>) {
+    private fun handleSwipeRightLogic(tempMatrix: Array<Array<Tile?>>) {
+
+        for (i in 0..3) {
+            for (j in 3 downTo 0) {
+                if (tilesMatrix[i][j] != null) {
+                    tempMatrix[i][j] =
+                        tilesMatrix[i][j] // copy same tile in new matrix at same position
+                    for (k in j + 1..3){
+                        if (tempMatrix[i][k] == null) { //if tile at one position right is null
+                            tempMatrix[i][k] = tilesMatrix[i][j] // move element one position right
+                            if (tempMatrix[i][k - 1] == tilesMatrix[i][j])
+                                tempMatrix[i][k - 1] =
+                                    null //since we moved element one pos right, empty prev position space
+                        }//need function to retrieve a new value and function to increment tile value
+                        //if tiles at current pos in tilesMatrix and one position right tempMatrix are same
+                        //need to crete new tile with incremented value
+                        else if (tempMatrix[i][k]?.getValueTileLevel() == tilesMatrix[i][j]?.getValueTileLevel()
+                            && tempMatrix[i][k]?.toIncrement()?.not() == true
+                        ) {
+                            //increment tile to next value
+                            tempMatrix[i][k] = tilesMatrix[i][j]?.incrementTile()
+                            if (tempMatrix[i][k - 1] == tilesMatrix[i][j])
+                                tempMatrix[i][k - 1] =
+                                    null //since we moved element one pos right, empty prev position space
+
+                        } else {
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        for (i in 0..3) {
+            for (j in  3 downTo 0) {
+                val t = tilesMatrix[i][j]
+                var newT: Tile? = null
+                var matrixX = 0
+                var matrixY = 0
+                //go through new matrix and check if tiles is present in new matrix, and find position
+                for (a in 0..3) {
+                    for (b in 0..3) {
+                        if (tempMatrix[a][b] == t) {
+                            newT = tempMatrix[a][b]
+                            matrixX = a
+                            matrixY = b
+                            break
+                        }
+
+                    }
+                }
+                // move tile to correct position
+                newT?.let {
+                    movingTiles.add(newT)
+                    t?.move(matrixX, matrixY)
+                }
+            }
+        }
 
     }
 
