@@ -12,6 +12,7 @@ import com.krishna.game2048.SwipeCallback
 import com.krishna.game2048.SwipeListener
 import com.krishna.game2048.sprites.GameOver
 import com.krishna.game2048.sprites.Grid
+import com.krishna.game2048.sprites.Score
 import com.krishna.game2048.sprites.TileManager
 
 
@@ -27,6 +28,7 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     var swipeListener: SwipeListener
     private var isGameOver = false
     private var gameOver: GameOver
+    private var score: Score
 
     init {
         holder.addCallback(this)
@@ -36,6 +38,8 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
         initGrid()
         tileManager = TileManager(resources, tileSize, scWidth, scHeight, this)
         gameOver = GameOver(resources, scWidth, scHeight)
+        score = Score(resources, scWidth, scHeight, tileSize)
+
     }
 
     fun initGame() {
@@ -93,6 +97,7 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
             it.drawRGB(250, 250, 250)
             grid.draw(it)
             tileManager.draw(it)
+            score.draw(canvas)
             if (isGameOver)
                 gameOver.draw(it)
         }
@@ -115,5 +120,9 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
 
     override fun gameOver() {
         isGameOver = true
+    }
+
+    override fun updateScore(delta: Int) {
+        score.updateScore(delta)
     }
 }

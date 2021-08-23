@@ -61,6 +61,7 @@ class Tile(
                 // ex, if 2 then 4, if 4 then 8, i.e increments in 2 to power n
                 curTileLevel++
                 increment = false
+                tmCallback.updateScore(Math.pow(2.toDouble(),curTileLevel.toDouble()).toInt())
             }
             tmCallback.onFinishedMoving(this)
         }

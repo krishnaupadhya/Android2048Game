@@ -418,4 +418,8 @@ class TileManager(
             }
         }
     }
+
+    override fun updateScore(delta: Int) {
+        gsCallback.updateScore(delta)
+    }
 }
