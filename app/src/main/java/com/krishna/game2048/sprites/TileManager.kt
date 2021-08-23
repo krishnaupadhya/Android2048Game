@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import com.krishna.game2048.R
 import com.krishna.game2048.SwipeCallback
+import com.krishna.game2048.gameengine.GameStateCallback
 import com.krishna.game2048.utility.Utils
 import java.util.*
 import kotlin.collections.ArrayList
@@ -15,7 +16,7 @@ class TileManager(
     private val tileSize: Int,
     private val scWidth: Int,
     private val scHeight: Int,
-
+    private val gsCallback: GameStateCallback
     ) : TileManagerCallback, Sprite {
 
     private val drawables = mutableListOf<Int>()
@@ -32,6 +33,8 @@ class TileManager(
 
     private var isMoving = false
 
+    private var isGameOver = false
+
     // it is required to check if there is any movement in tiles,
     // only if tiles are moved on  swipe in any direction new tiles should be generated
     var generateNewTile = false
@@ -44,7 +47,7 @@ class TileManager(
         initGame()
     }
 
-    private fun initGame() {
+    fun initGame() {
         var index = 0;
         movingTiles = ArrayList()
         // create 2 tiles on random positions on game start
@@ -98,6 +101,9 @@ class TileManager(
                     tilesMatrix[i][j]?.draw(canvas)
                 }
             }
+        }
+        if(isGameOver){
+            gsCallback.gameOver()
         }
     }
 
@@ -361,6 +367,9 @@ class TileManager(
         if (movingTiles.isEmpty()) {
             isMoving = false
             generateNewTilesOnMovement()
+            //generate a tile first if there is a empty space in tilesMatrix
+            // then call a method to check if game is over
+            checkIfGameEnded()
         }
     }
 
@@ -376,6 +385,35 @@ class TileManager(
                 if (tilesMatrix[x][y] == null) {
                     newTile = Tile(tileSize, scWidth, scHeight, this, x, y)
                     tilesMatrix[x][y] = newTile
+                }
+            }
+        }
+    }
+
+    private fun checkIfGameEnded() {
+        isGameOver = true
+        for (i in 0..3) {
+            for (j in 0..3) {
+                //if there is atleast one empty space game is still not over
+                if (tilesMatrix[i][j] == null) {
+                    isGameOver = false
+                    break
+                }
+            }
+        }
+        //there are no empty spaces
+        //
+        if (isGameOver) {
+            for (i in 0..3) {
+                for (j in 0..3) {
+                    //if there is any adjacent element has same value, then game is not over and player can merge them
+                    if ((i > 0 && tilesMatrix[i - 1][j]?.getValueTileLevel() == tilesMatrix[i][j]?.getValueTileLevel()) ||
+                        (i < 3 && tilesMatrix[i + 1][j]?.getValueTileLevel() == tilesMatrix[i][j]?.getValueTileLevel()) ||
+                        (j > 0 && tilesMatrix[i][j - 1]?.getValueTileLevel() == tilesMatrix[i][j]?.getValueTileLevel()) ||
+                        (j < 3 && tilesMatrix[i][j + 1]?.getValueTileLevel() == tilesMatrix[i][j]?.getValueTileLevel())
+                    ) {
+                        isGameOver = false
+                    }
                 }
             }
         }

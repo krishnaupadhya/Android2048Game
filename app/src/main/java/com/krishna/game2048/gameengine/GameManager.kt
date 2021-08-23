@@ -10,12 +10,13 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.krishna.game2048.SwipeCallback
 import com.krishna.game2048.SwipeListener
+import com.krishna.game2048.sprites.GameOver
 import com.krishna.game2048.sprites.Grid
 import com.krishna.game2048.sprites.TileManager
 
 
 class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context, attrs),
-    SurfaceHolder.Callback ,SwipeCallback{
+    SurfaceHolder.Callback, SwipeCallback, GameStateCallback {
     lateinit var gameHandler: GameHandler
     lateinit var grid: Grid
     var scHeight: Int = 0
@@ -24,14 +25,22 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     var mContext: Context? = null
     var tileManager: TileManager
     var swipeListener: SwipeListener
+    private var isGameOver = false
+    private var gameOver: GameOver
 
     init {
         holder.addCallback(this)
-        isLongClickable=true // allows us to intercept the on touch event
+        isLongClickable = true // allows us to intercept the on touch event
         mContext = context
-        swipeListener= SwipeListener(mContext,this)
+        swipeListener = SwipeListener(mContext, this)
         initGrid()
-        tileManager = TileManager(resources, tileSize, scWidth, scHeight)
+        tileManager = TileManager(resources, tileSize, scWidth, scHeight, this)
+        gameOver = GameOver(resources, scWidth, scHeight)
+    }
+
+    fun initGame() {
+        isGameOver = false
+        tileManager.initGame()
     }
 
     private fun initGrid() {
@@ -44,8 +53,6 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
         grid = Grid(resources, scWidth, scHeight, tileSize)
 
     }
-
-    fun initGame() {}
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         gameHandler = GameHandler(holder, this).apply {
@@ -75,7 +82,9 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
     }
 
     fun update() {
-        tileManager.update()
+        if (isGameOver.not()) {
+            tileManager.update()
+        }
     }
 
     override fun draw(canvas: Canvas?) {
@@ -84,18 +93,27 @@ class GameManager(context: Context?, attrs: AttributeSet?) : SurfaceView(context
             it.drawRGB(250, 250, 250)
             grid.draw(it)
             tileManager.draw(it)
+            if (isGameOver)
+                gameOver.draw(it)
         }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (isGameOver && event?.action == MotionEvent.ACTION_DOWN) {
+            initGame()
+        }
         event?.let {
             swipeListener.onTouchEvent(event)
         }
         return super.onTouchEvent(event)
     }
+
     override fun onSwipe(d: SwipeCallback.Direction) {
         //tile manager processes the direction
         tileManager.onSwipe(d)
     }
 
+    override fun gameOver() {
+        isGameOver = true
+    }
 }

@@ -6,12 +6,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import com.krishna.game2048.R
 
-class Grid(var res: Resources, var scWidth: Int, var scHeight: Int, var tileSize: Int) : Sprite {
-    lateinit var grid: Bitmap
-//    var screenWidth: Int = 0
-//    var screenheight: Int = 0
-//    val tileSize=0
-
+class Grid(res: Resources, var scWidth: Int, var scHeight: Int, tileSize: Int) : Sprite {
+    var grid: Bitmap
     init {
         val bmp = BitmapFactory.decodeResource(res, R.drawable.grid)
         grid = Bitmap.createScaledBitmap(bmp, tileSize * 4, tileSize * 4, false)
