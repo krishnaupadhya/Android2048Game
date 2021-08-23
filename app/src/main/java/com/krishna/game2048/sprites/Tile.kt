@@ -1,6 +1,7 @@
 package com.krishna.game2048.sprites
 
 import android.graphics.Canvas
+import java.util.*
 
 class Tile(
     val tileSize: Int,
@@ -29,6 +30,12 @@ class Tile(
         // ( matrixX * tileSize ) is required to move it in Y direction  towards 0,y or 1,y or 2,y or 3,y
         curY = scHeight / 2 - 2 * tileSize + matrixX * tileSize
         destY = curY
+
+        //generates tile with value 4, one in 10 times
+        val chanceOf4 = Random().nextInt(100)
+        if (chanceOf4 >= 90) {
+            curTileLevel = 2
+        }
     }
 
     fun move(matrixX: Int, matrixY: Int) {
@@ -55,6 +62,7 @@ class Tile(
                 curTileLevel++
                 increment = false
             }
+            tmCallback.onFinishedMoving(this)
         }
     }
 

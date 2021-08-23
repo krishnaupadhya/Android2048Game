@@ -30,7 +30,11 @@ class TileManager(
         }
     }
 
-    var isMoving = false
+    private var isMoving = false
+
+    // it is required to check if there is any movement in tiles,
+    // only if tiles are moved on  swipe in any direction new tiles should be generated
+    var generateNewTile = false
 
     lateinit var movingTiles: ArrayList<Tile>
 
@@ -43,14 +47,17 @@ class TileManager(
     private fun initGame() {
         var index = 0;
         movingTiles = ArrayList()
-        // create 5 tiles on random positions on game start
-        while (index < 5) {
+        // create 2 tiles on random positions on game start
+        while (index < 2) {
             val x = Random().nextInt(4)
             val y = Random().nextInt(4)
+            //if value at tile x,y is null create new tile
             if (tilesMatrix[x][y] == null) {
-                tilesMatrix[x][y] = Tile(tileSize, scWidth, scHeight, this, x, y)
+                val t = Tile(tileSize, scWidth, scHeight, this, x, y)
+                tilesMatrix[x][y] = t
                 index++
             } else {
+                //  if value at tile x,y is not null initiae loop again to create tile at another pos
                 index--
             }
         }
@@ -126,6 +133,18 @@ class TileManager(
                 SwipeCallback.Direction.DOWN -> handleSwipeDownLogic(tempMatrix)
                 SwipeCallback.Direction.LEFT -> handleSwipeLeftLogic(tempMatrix)
                 else -> handleSwipeRightLogic(tempMatrix)
+            }
+
+            //if new and old matrix are same on swipe
+            //there is no movement in tiles
+            //hence no need to create new tiles
+            for (i in 0..3) {
+                for (j in 3 downTo 0) {
+                    if (tempMatrix[i][j] != tilesMatrix[i][j]) {
+                        generateNewTile = true
+                        break;
+                    }
+                }
             }
             tilesMatrix = tempMatrix
         }
@@ -336,4 +355,29 @@ class TileManager(
         }
     }
 
+    //method to check if moving all tiles to new positions is complete create new tiles
+    override fun onFinishedMoving(t: Tile) {
+        movingTiles.remove(t)
+        if (movingTiles.isEmpty()) {
+            isMoving = false
+            generateNewTilesOnMovement()
+        }
+    }
+
+    //generate new tile at empty position
+    private fun generateNewTilesOnMovement() {
+        if (generateNewTile) {
+            generateNewTile = false
+            var newTile: Tile? = null
+            while (newTile == null) {
+                val x = Random().nextInt(4)
+                val y = Random().nextInt(4)
+                //if value at tile x,y is null create new tile
+                if (tilesMatrix[x][y] == null) {
+                    newTile = Tile(tileSize, scWidth, scHeight, this, x, y)
+                    tilesMatrix[x][y] = newTile
+                }
+            }
+        }
+    }
 }
