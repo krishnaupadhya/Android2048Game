@@ -61,6 +61,8 @@ class Tile(
                 // ex, if 2 then 4, if 4 then 8, i.e increments in 2 to power n
                 curTileLevel++
                 increment = false
+                // score is 2 times the current level tile
+                //if 2 tiles of value 4 is merged score is added by 8
                 tmCallback.updateScore(Math.pow(2.toDouble(),curTileLevel.toDouble()).toInt())
             }
             tmCallback.onFinishedMoving(this)
